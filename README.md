@@ -215,16 +215,4 @@ docker-compose up --build
 
 ---
 
-## 🤝 Contribución
 
-1. Fork el proyecto  
-2. Crear una rama: `git checkout -b feature/AmazingFeature`  
-3. Commit: `git commit -m 'Add some AmazingFeature'`  
-4. Push: `git push origin feature/AmazingFeature`  
-5. Abrir un Pull Request  
-
----
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo LICENSE para más detalles.
