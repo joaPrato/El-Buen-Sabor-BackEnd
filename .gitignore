@@ -95,7 +95,9 @@ logs/
 *.log.*
 
 # Docker
-.dockerignore
+docker-compose.override.yml
+docker-compose.local.yml
+init-scripts/
 
 # Temporary files
 *.tmp
