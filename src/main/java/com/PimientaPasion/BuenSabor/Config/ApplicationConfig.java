@@ -26,12 +26,19 @@ public class ApplicationConfig {
 
     private final UsuarioRepository userRepository;
 
+    // aca entra en el primer paso, recibiendo  config que
+    // contiene al usuario y contrasenia, pero para hacer la autenticacion
+    //hay necesita 1ro encontrar al usuario y como esta encriptada la contrasenia
+    //eso lo delega al authenticationProvider
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception
     {
         return config.getAuthenticationManager();
     }
 
+
+    // se provee la froma en que se va a obtener el usuario y
+    //de que forma esta encriptada la contrasenia
     @Bean
     public AuthenticationProvider authenticationProvider()
     {
@@ -41,11 +48,14 @@ public class ApplicationConfig {
         return authenticationProvider;
     }
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    //forma en que el AuthenticationManager va a encontrar al usuario
+    //en la base de datos para autenticarlo.
     @Bean
     public UserDetailsService userDetailService() {
         return username -> userRepository.findByUsername(username)
@@ -63,15 +73,6 @@ public class ApplicationConfig {
         return source;
     }*/
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+
 
 }

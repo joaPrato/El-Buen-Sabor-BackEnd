@@ -105,7 +105,7 @@ public class ClienteController extends BaseControllerImpl<Cliente, ClienteServic
         }
     }
 
-    @GetMapping("/buscarClente")
+    @GetMapping("/buscarCliente")
     public  ResponseEntity<?> buscarCliente(@RequestParam String username)throws Exception {
         try{
             return ResponseEntity.status(HttpStatus.OK).body(servicio.buscarCliente(username));

@@ -35,7 +35,7 @@ public class Usuario extends Base implements UserDetails {
     private String auth0Id;*/
 
     @NotNull
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false,unique = true)
     private String username;
 
     @NonNull
@@ -50,7 +50,7 @@ public class Usuario extends Base implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() { //que rol tiene mi usuario
-        return List.of(new SimpleGrantedAuthority((rol.name())));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));
     }
     @Override
     public boolean isAccountNonExpired() {

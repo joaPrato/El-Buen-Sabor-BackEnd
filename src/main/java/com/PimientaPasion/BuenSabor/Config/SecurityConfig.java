@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -33,49 +34,75 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authRequest ->
                         authRequest
+                                //Es muy importante el orden en que ponemos los permisos,
+                                // porque spring security evalua las reglas de arriba a abajo
+                                // cuando la ruta conicide verfica si tiene permiso y luego ya no evalua las demas
+                                //poner rutas especificas arriba y las mas generales abajo
+
 
                                 //Autenticacion
                                 .requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll()
+
                                 //Consola H2
-                                .requestMatchers(PathRequest.toH2Console()).permitAll()
+                                //.requestMatchers(PathRequest.toH2Console()).permitAll()
+
                                 //Autorizacion de acceso a la url
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/**")).permitAll()
+                                //.requestMatchers(new AntPathRequestMatcher("/api/v1/**")).permitAll()
 
-                                // .requestMatchers(new AntPathRequestMatcher("/api/v1/empleados/**")).hasAnyAuthority("ADMINISTRADOR")
-                                /*
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/usuarios/**")).hasAnyAuthority("ADMINISTRADOR")
+                                //CLIENTE
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/clientes/modificarCliente")).hasAnyRole("CLIENTE","ADMINISTRADOR")
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/clientes/buscarDomiciliosCliente")).hasAnyRole("CLIENTE","ADMINISTRADOR")
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/clientes/buscarCliente")).hasAnyRole("CLIENTE","ADMINISTRADOR")
 
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/clientes/modificarCliente")).hasAnyAuthority("CLIENTE")
 
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/empleados/modificarEmpleado")).hasAnyAuthority("ADMINISTRADOR")
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/clientes/**")).hasRole("ADMINISTRADOR")
 
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/empleados/modificarEmpleado")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/empleados/**")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/empleados")).hasAnyAuthority("ADMINISTRADOR")
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/productos/**")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/clientes/**")).permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/domicilios/**")).hasAnyAuthority("ADMINISTRADOR")
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/clientes/**")).hasAnyAuthority("ADMINISTRADOR")
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/pedidos/buscarPedidosCliente")).hasAnyAuthority("CLIENTE")
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/pedidos/verDetallePedido")).hasAnyAuthority("CLIENTE")
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/pedidos/verFacturaPedido")).hasAnyAuthority("CLIENTE")
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/pedidos/buscarPedidoPorEstado")).hasAnyAuthority("DELIVERY","CAJERO","COCINERO")
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/ingredientes/**")).hasAnyAuthority("ADMINISTRADOR","COCINERO")
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/productos/buscarPorDenominacion")).hasAnyAuthority("CLIENTE")
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/productos/buscarPorDenominacionPage")).hasAnyAuthority("CLIENTE")
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/productos/buscarDisponibles")).hasAnyAuthority("CLIENTE")
+                                //DOMICILIO
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/domicilios/{id}", "PUT")).hasAnyRole("CLIENTE","ADMINISTRADOR")
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/domicilios/{id}", "DELETE")).hasAnyRole("CLIENTE","ADMINISTRADOR")
 
-                                .requestMatchers(new AntPathRequestMatcher("/api/v1/rubroProductos/buscarRubrosProdDisponibles")).hasAnyAuthority("CLIENTE")
-                                */
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/domicilios/**")).hasRole("ADMINISTRADOR")
+
+                                //EMPLEADOS
+
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/empleados/**")).hasRole("ADMINISTRADOR")
+
+                                //FACTURAS
+
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/facturas/**")).hasRole("ADMINISTRADOR")
+
+                                //INGREDIENTES
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/ingredientes/**")).hasAnyRole("COCINERO", "ADMINISTRADOR")
+
+                                //PEDIDOS
+
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/ingredientes/**")).hasRole("ADMINISTRADOR")
+
+                                //PRODUCTOS
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/productos/**")).hasRole("ADMINISTRADOR")
+
+                                //RUBRO_INGREDIENTES
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/rubroIngredientes/**")).hasAnyRole("COCINERO","ADMINISTRADOR")
+
+                                //RUBRO_PRODUCTOS
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/rubroProductos/searchRubrosProdDisponibles")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/rubroProductos/**")).hasRole("ADMINISTRADOR")
+
+                                //UNIDAD DE MEDIDA
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/UnidadMedida/**")).hasAnyRole("COCINERO", "ADMINISTRADOR")
+
+                                //USUARIOS
+                                .requestMatchers(new AntPathRequestMatcher("/api/v1/usuarios/**")).hasRole("ADMINISTRADOR")
 
                                 .anyRequest().authenticated()
 
 
                 )
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) //H2
+                //.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)) //H2
                 .sessionManagement(sessionManager ->
                         sessionManager
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -85,6 +112,28 @@ public class SecurityConfig {
                 .build();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
 
+        // Permitir orígenes específicos (más seguro que *)
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+
+        // Métodos HTTP permitidos
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+        // Headers permitidos
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+
+        // Permitir credenciales
+        configuration.setAllowCredentials(true);
+
+        // Headers expuestos al cliente
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
 }

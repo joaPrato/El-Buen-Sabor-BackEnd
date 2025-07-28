@@ -54,6 +54,10 @@ public class BuenSaborApplication {
             //				Rehacerlo mas bonito
             //-----------------------------------------------
 
+            //INITIALIZATION DE DATOS
+
+            /*
+
             SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy-MM-dd");
             String fecha1 = "2023-09-10";
             String fecha2 = "2023-08-15";
@@ -812,6 +816,10 @@ public class BuenSaborApplication {
 
             //guardar Configuracion
             configuracionRepository.save(configuracion);
+
+
+             */
+
         };
     }
 }

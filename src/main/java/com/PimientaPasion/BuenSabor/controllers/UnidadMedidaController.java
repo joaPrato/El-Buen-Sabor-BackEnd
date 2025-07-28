@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "*")
 @RequestMapping(path = "api/v1/UnidadMedida")
 public class UnidadMedidaController extends  BaseControllerImpl<UnidadMedida, UnidadMedidaServiceImpl>{
 }
